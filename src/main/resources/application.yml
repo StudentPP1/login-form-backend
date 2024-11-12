@@ -1,6 +1,3 @@
-application:
-  frontend:
-    url: http://localhost:3000/
 spring:
   config:
     import: optional:file:.env[.properties]
@@ -23,10 +20,8 @@ spring:
     username: mishamakytonin@gmail.com
     password: ${MAIL_PASSWORD}
     properties:
-      smtp:
-        auth: true
-        starttls:
-          enable: true
+      mail.smtp.auth: true
+      mail.smtp.starttls.enable: true
   jpa:
     show-sql: true
     hibernate:
@@ -37,3 +32,9 @@ logging:
     org.springframework.security: debug
 server:
   port: 8080
+app:
+    application-name: login-app
+    base-url: http://localhost:8080
+    allowed-origins: http://localhost
+    login-page-url: ${app.base-url}/auth/login
+    login-success-url: ${app.base-url}/auth/login-success

@@ -16,7 +16,7 @@ public class UserController {
 
     // register a new user, then verification email will be sent to the user
     @PostMapping
-    public ResponseEntity<UserResponse> create(@Valid @RequestBody CreateUserRequest request) {
+    public ResponseEntity<UserResponse> create(@Valid @RequestBody CreateUserRequest request) throws Exception {
         UserResponse user = userService.create(request);
         return ResponseEntity.ok(user);
     }

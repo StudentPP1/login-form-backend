@@ -3,13 +3,11 @@ package github.studentpp1.advancedloginform.users.models;
 import github.studentpp1.advancedloginform.users.data.CreateUserRequest;
 import github.studentpp1.advancedloginform.users.entity.AbstractEntity;
 import github.studentpp1.advancedloginform.users.enums.Role;
-import github.studentpp1.advancedloginform.util.ApplicationContextProvider;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.Table;
+import github.studentpp1.advancedloginform.utils.providers.ApplicationContextProvider;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Entity
@@ -24,6 +22,10 @@ public class User extends AbstractEntity {
     private boolean verified = false;
     @Enumerated(EnumType.STRING)
     private Role role;
+
+    @Setter
+    @OneToOne(mappedBy = "user")
+    private VerificationCode verificationCode;
 
     public User(CreateUserRequest data) {
         // inject a PasswordEncoder bean

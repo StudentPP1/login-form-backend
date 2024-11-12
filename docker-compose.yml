@@ -10,6 +10,12 @@ services:
     depends_on:
       - db
     environment:
+      - app.application-name=login-app
+      - app.base-url=http://app:8080
+      - app.allowed-origins=http://localhost
+      - app.login-page-url=http://app:8080/auth/login
+      - app.login-success-url=http://app:8080/auth/login-success
+      - spring.jpa.hibernate.ddl-auto=create-drop
       - spring.mail.host=smtp.gmail.com
       - spring.mail.port=587
       - spring.mail.username=mishamakytonin@gmail.com
@@ -22,8 +28,6 @@ services:
       - spring.jpa.database-platform=org.hibernate.dialect.PostgreSQLDialect
       - spring.datasource.username=${DATABASE_USERNAME}
       - spring.datasource.password=${DATABASE_PASSWORD}
-      - spring.jpa.hibernate.ddl-auto=create-drop
-      - front-end.url=http://localhost:3000/
       - spring.security.oauth2.client.registration.google.client-id=${GOOGLE_CLIENT_ID}
       - spring.security.oauth2.client.registration.google.client-secret=${GOOGLE_CLIENT_SECRET}
       - spring.security.oauth2.client.registration.google.redirect-uri=http://app:8080/oauth2/callback/google

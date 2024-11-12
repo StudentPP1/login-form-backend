@@ -1,4 +1,4 @@
-package github.studentpp1.advancedloginform.util.validators;
+package github.studentpp1.advancedloginform.utils.validation;
 
 
 import jakarta.validation.Constraint;

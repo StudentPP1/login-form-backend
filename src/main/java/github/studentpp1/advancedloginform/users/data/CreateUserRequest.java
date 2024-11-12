@@ -1,7 +1,7 @@
 package github.studentpp1.advancedloginform.users.data;
 
-import github.studentpp1.advancedloginform.util.validators.PasswordMatch;
-import github.studentpp1.advancedloginform.util.validators.Unique;
+import github.studentpp1.advancedloginform.utils.validation.PasswordMatch;
+import github.studentpp1.advancedloginform.utils.validation.Unique;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;

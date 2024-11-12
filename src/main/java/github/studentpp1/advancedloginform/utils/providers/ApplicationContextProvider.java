@@ -1,4 +1,4 @@
-package github.studentpp1.advancedloginform.util;
+package github.studentpp1.advancedloginform.utils.providers;
 
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
