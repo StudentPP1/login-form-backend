@@ -49,6 +49,13 @@ public class ExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.UNPROCESSABLE_ENTITY);
     }
 
+    @org.springframework.web.bind.annotation.ExceptionHandler(ApiException.class)
+    public ResponseEntity<HttpErrorResponse> handleException(ApiException e) {
+        logger.info("handling ApiException: {}", e.getMessage());
+        var response = HttpErrorResponse.of(e.getMessage(), e.getStatus(), e.getErrors(), null);
+        return new ResponseEntity<>(response, HttpStatus.valueOf(e.getStatus()));
+    }
+
     // handle other errors as server unexpected errors
     @org.springframework.web.bind.annotation.ExceptionHandler(Exception.class)
     public ResponseEntity<HttpErrorResponse> handleException(Exception e) {

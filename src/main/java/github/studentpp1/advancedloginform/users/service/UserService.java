@@ -7,6 +7,7 @@ import github.studentpp1.advancedloginform.users.models.User;
 import github.studentpp1.advancedloginform.users.models.VerificationCode;
 import github.studentpp1.advancedloginform.users.repository.UserRepository;
 import github.studentpp1.advancedloginform.users.repository.VerificationCodeRepository;
+import github.studentpp1.advancedloginform.utils.exception.ApiException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.TaskScheduler;
@@ -51,5 +52,15 @@ public class UserService {
         user.setVerificationCode(verificationCode); // set relation
         verificationCodeRepository.save(verificationCode);
         sendVerificationEmailJob.run(user.getId());
+    }
+
+    @Transactional
+    public void verifyEmail(String code) {
+        VerificationCode verificationCode = verificationCodeRepository.findByCode(code)
+                .orElseThrow(() -> ApiException.builder().status(400).message("Invalid token").build());
+        User user = verificationCode.getUser();
+        user.setVerified(true);
+        userRepository.save(user);
+        verificationCodeRepository.delete(verificationCode);
     }
 }
