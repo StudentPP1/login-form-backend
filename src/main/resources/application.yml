@@ -29,12 +29,12 @@ spring:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
 logging:
   level:
-    org.springframework.security: debug
+    org.springframework.security: trace
 server:
   port: 8080
 app:
     application-name: login-app
     base-url: http://localhost:8080
     allowed-origins: http://localhost
-    login-page-url: ${app.base-url}/auth/login
-    login-success-url: ${app.base-url}/auth/login-success
+    login-page-url: http://localhost:3000/auth/login
+    login-success-url: http://localhost:3000/auth/login-success

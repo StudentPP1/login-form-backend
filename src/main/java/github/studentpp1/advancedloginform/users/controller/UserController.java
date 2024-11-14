@@ -1,14 +1,16 @@
 package github.studentpp1.advancedloginform.users.controller;
 
 import github.studentpp1.advancedloginform.config.ApplicationProperties;
-import github.studentpp1.advancedloginform.users.data.CreateUserRequest;
-import github.studentpp1.advancedloginform.users.data.UserResponse;
+import github.studentpp1.advancedloginform.users.data.*;
 import github.studentpp1.advancedloginform.users.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.view.RedirectView;
+
+import java.io.IOException;
 
 @RestController
 @RequestMapping("/api/users")
@@ -28,5 +30,37 @@ public class UserController {
     public RedirectView verifyEmail(@RequestParam String token) {
         userService.verifyEmail(token);
         return new RedirectView(applicationProperties.getLoginPageUrl());
+    }
+    
+    @PostMapping("/forgot-password")
+    public ResponseEntity<Void> forgotPassword(@Valid @RequestBody ForgotPasswordRequest request) {
+        userService.forgotPassword(request.getEmail());
+        return ResponseEntity.ok().build();
+    }
+
+    @PatchMapping("/reset-password")
+    public ResponseEntity<Void> resetPassword(@Valid @RequestBody UpdateUserPasswordRequest request) {
+        userService.resetPassword(request);
+        return ResponseEntity.ok().build();
+    }
+
+    // update first & last names at profile
+    @PutMapping // PUT - for updating, POST - for creating
+    public ResponseEntity<UserResponse> update(@Valid @RequestBody UpdateUserRequest request) {
+        UserResponse user = userService.update(request);
+        return ResponseEntity.ok(user);
+    }
+
+    @PatchMapping("/password")
+    public ResponseEntity<UserResponse> updatePassword(@Valid @RequestBody UpdateUserPasswordRequest request) {
+        UserResponse user = userService.updatePassword(request);
+        return ResponseEntity.ok(user);
+    }
+
+    @PatchMapping("/profile-picture") // for changing
+    public ResponseEntity<UserResponse> updateProfilePicture(@RequestParam("file") MultipartFile file) throws IOException {
+        System.out.println("?");
+        UserResponse user = userService.updateProfilePicture(file);
+        return ResponseEntity.ok(user);
     }
 }

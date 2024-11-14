@@ -1,6 +1,7 @@
 package github.studentpp1.advancedloginform.users.models;
 
 import github.studentpp1.advancedloginform.users.data.CreateUserRequest;
+import github.studentpp1.advancedloginform.users.data.UpdateUserRequest;
 import github.studentpp1.advancedloginform.users.entity.AbstractEntity;
 import github.studentpp1.advancedloginform.users.enums.Role;
 import github.studentpp1.advancedloginform.utils.providers.ApplicationContextProvider;
@@ -26,6 +27,8 @@ public class User extends AbstractEntity implements UserDetails {
     private String firstName;
     private String lastName;
     @Setter
+    private byte[] profileImage;
+    @Setter
     private boolean verified = false;
     @Enumerated(EnumType.STRING)
     private Role role;
@@ -42,6 +45,16 @@ public class User extends AbstractEntity implements UserDetails {
         this.firstName = data.getFirstName();
         this.lastName = data.getLastName();
         this.role = Role.USER;
+    }
+
+    public void update(UpdateUserRequest request) {
+        this.firstName = request.getFirstName();
+        this.lastName = request.getLastName();
+    }
+
+    public void updatePassword(String newPassword) {
+        PasswordEncoder passwordEncoder = ApplicationContextProvider.bean(PasswordEncoder.class);
+        this.password = passwordEncoder.encode(newPassword);
     }
 
     @Override
