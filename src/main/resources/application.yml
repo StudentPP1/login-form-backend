@@ -35,6 +35,6 @@ server:
 app:
     application-name: login-app
     base-url: http://localhost:8080
-    allowed-origins: http://localhost
-    login-page-url: http://localhost:3000/auth/login
-    login-success-url: http://localhost:3000/auth/login-success
+    allowed-origins: http://localhost:5173
+    login-page-url: http://localhost:5173/auth/login
+    login-success-url: http://localhost:5173/profile

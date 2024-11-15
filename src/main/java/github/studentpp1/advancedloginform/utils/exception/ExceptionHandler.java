@@ -6,6 +6,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -54,6 +55,13 @@ public class ExceptionHandler extends ResponseEntityExceptionHandler {
         logger.info("handling ApiException: {}", e.getMessage());
         var response = HttpErrorResponse.of(e.getMessage(), e.getStatus(), e.getErrors(), null);
         return new ResponseEntity<>(response, HttpStatus.valueOf(e.getStatus()));
+    }
+
+    @org.springframework.web.bind.annotation.ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<HttpErrorResponse> handleException(BadCredentialsException e) {
+        logger.error("Handing BadCredentialsException: {}", e.getMessage());
+        var response = HttpErrorResponse.of("Unexpected error", 500);
+        return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     // handle other errors as server unexpected errors
