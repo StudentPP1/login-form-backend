@@ -11,6 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.view.RedirectView;
 
 import java.io.IOException;
+import java.util.HashMap;
 
 @RestController
 @RequestMapping("/api/users")
@@ -38,14 +39,15 @@ public class UserController {
         return ResponseEntity.ok().build();
     }
 
-    @PatchMapping("/reset-password")
+    @PostMapping("/reset-password")
     public ResponseEntity<Void> resetPassword(@Valid @RequestBody UpdateUserPasswordRequest request) {
         userService.resetPassword(request);
         return ResponseEntity.ok().build();
     }
 
     // update first & last names at profile
-    @PutMapping // PUT - for updating, POST - for creating
+    // PUT - for updating, POST - for creating
+    @PutMapping ("/update-details")
     public ResponseEntity<UserResponse> update(@Valid @RequestBody UpdateUserRequest request) {
         UserResponse user = userService.update(request);
         return ResponseEntity.ok(user);
@@ -58,8 +60,9 @@ public class UserController {
     }
 
     @PatchMapping("/profile-picture") // for changing
-    public ResponseEntity<UserResponse> updateProfilePicture(@RequestParam("file") MultipartFile file) throws IOException {
-        System.out.println("?");
+    public ResponseEntity<UserResponse> updateProfilePicture(
+            @RequestParam("file") MultipartFile file
+    ) throws IOException {
         UserResponse user = userService.updateProfilePicture(file);
         return ResponseEntity.ok(user);
     }

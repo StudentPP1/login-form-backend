@@ -36,7 +36,8 @@ public class SendResetPasswordEmailJob {
     }
 
     private void sendResetPasswordEmail(User user, PasswordResetToken token) {
-        String link = applicationProperties.getBaseUrl() + "/auth/reset-password?token=" + token.getToken();
+        String link = applicationProperties.getFrontUrl() + "/auth/reset-password?token=" + token.getToken();
+        System.out.println(link);
         Context context = new Context();
         context.setVariable("user", user);
         context.setVariable("link", link);

@@ -8,33 +8,20 @@ import github.studentpp1.advancedloginform.users.data.UserResponse;
 import github.studentpp1.advancedloginform.users.jobs.SendResetPasswordEmailJob;
 import github.studentpp1.advancedloginform.users.jobs.SendVerificationEmailJob;
 import github.studentpp1.advancedloginform.users.models.PasswordResetToken;
-import github.studentpp1.advancedloginform.users.models.UploadedFile;
 import github.studentpp1.advancedloginform.users.models.User;
 import github.studentpp1.advancedloginform.users.models.VerificationCode;
 import github.studentpp1.advancedloginform.users.repository.PasswordResetTokenRepository;
-import github.studentpp1.advancedloginform.users.repository.UploadedFileRepository;
 import github.studentpp1.advancedloginform.users.repository.UserRepository;
 import github.studentpp1.advancedloginform.users.repository.VerificationCodeRepository;
-import github.studentpp1.advancedloginform.users.utils.ImageUtils;
 import github.studentpp1.advancedloginform.utils.exception.ApiException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
-import org.springframework.scheduling.TaskScheduler;
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.scheduling.concurrent.SimpleAsyncTaskScheduler;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.time.Duration;
-import java.time.Instant;
-import java.util.concurrent.CountDownLatch;
 
 @Service
 @RequiredArgsConstructor
@@ -45,22 +32,12 @@ public class UserService {
     private final PasswordResetTokenRepository passwordResetTokenRepository;
     private final SendResetPasswordEmailJob sendResetPasswordEmailJob;
     private final PasswordEncoder passwordEncoder;
-    private final UploadedFileRepository uploadedFileRepository;
-
-    private TaskScheduler scheduler = new SimpleAsyncTaskScheduler();
 
     @Transactional
     public UserResponse create(@Valid CreateUserRequest request) throws Exception {
         User user = new User(request);
         user = userRepository.save(user);
-        User finalUser = user;
-        new Thread(() -> {
-                    try {
-                        sendVerificationEmail(finalUser);
-                    } catch (Exception e) {
-                        throw new RuntimeException(e);
-                    }
-                }).start();
+        sendVerificationEmail(user);
         return new UserResponse(user);
     }
 
@@ -69,7 +46,13 @@ public class UserService {
         VerificationCode verificationCode = new VerificationCode(user);
         user.setVerificationCode(verificationCode); // set relation
         verificationCodeRepository.save(verificationCode);
-        sendVerificationEmailJob.run(user.getId());
+        new Thread(() -> {
+            try {
+                sendVerificationEmailJob.run(user.getId());
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }).start();
     }
 
     @Transactional
@@ -112,8 +95,6 @@ public class UserService {
     @Transactional
     public UserResponse update(UpdateUserRequest request) {
         User user = SecurityUtils.getAuthenticatedUser();
-        // lazy request & error if not found
-        user = userRepository.getReferenceById(user.getId());
         user.update(request);
         user = userRepository.save(user);
         return new UserResponse(user);
@@ -131,17 +112,12 @@ public class UserService {
         return new UserResponse(user);
     }
 
+    @Transactional
     public UserResponse updateProfilePicture(MultipartFile file) throws IOException {
         User user = SecurityUtils.getAuthenticatedUser();
-        UploadedFile picture = new UploadedFile(
-                ImageUtils.compressImage(file.getBytes()),
-                file.getSize(),
-                file.getOriginalFilename(),
-                user
-        );
-        user.setProfileImage(picture.getFile());
+        byte[] bytes = file.getBytes();
+        user.setProfileImage(bytes);
         user = userRepository.save(user);
-        uploadedFileRepository.save(picture);
         return new UserResponse(user);
     }
 }

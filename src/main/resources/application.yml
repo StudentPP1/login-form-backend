@@ -13,7 +13,14 @@ spring:
           google:
             client-id: ${GOOGLE_CLIENT_ID}
             client-secret: ${GOOGLE_CLIENT_SECRET}
-            redirectUri: http://localhost:8080/oauth2/callback/google
+            redirectUri: "{baseUrl}/oauth2/callback/{registrationId}"
+          github:
+            client-id: ${GITHUB_CLIENT_ID}
+            client-secret: ${GITHUB_CLIENT_SECRET}
+            redirectUri: "{baseUrl}/oauth2/callback/{registrationId}"
+            scope:
+              - public_profile
+              - user:email
   mail:
     host: smtp.gmail.com
     port: 587
@@ -32,9 +39,14 @@ logging:
     org.springframework.security: trace
 server:
   port: 8080
+  servlet:
+    session:
+      cookie:
+        same-site: lax
 app:
     application-name: login-app
     base-url: http://localhost:8080
+    front-url: http://localhost:5173
     allowed-origins: http://localhost:5173
     login-page-url: http://localhost:5173/auth/login
     login-success-url: http://localhost:5173/profile

@@ -14,6 +14,7 @@ public class ApplicationProperties {
     private List<String> allowedOrigins;
     private String applicationName;
     private String baseUrl;
+    private String frontUrl;
     private String loginPageUrl;
     private String loginSuccessUrl;
     private String adminUserEmail;

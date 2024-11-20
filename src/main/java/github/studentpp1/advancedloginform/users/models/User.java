@@ -13,38 +13,64 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
-@Entity
+@Entity(name="users")
 @Getter
 @NoArgsConstructor
-@Table(name = "users")
 public class User extends AbstractEntity implements UserDetails {
     private String email;
     private String password;
     private String firstName;
     private String lastName;
     @Setter
-    private byte[] profileImage;
-    @Setter
     private boolean verified = false;
+    @Setter
+    private byte[] profileImage;
     @Enumerated(EnumType.STRING)
+    @Setter
     private Role role;
 
     @Setter
     @OneToOne(mappedBy = "user")
     private VerificationCode verificationCode;
 
+    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
+    private List<UserConnectedAccount> connectedAccounts = new ArrayList<>();
+
+
     public User(CreateUserRequest data) {
-        // inject a PasswordEncoder bean
         PasswordEncoder passwordEncoder = ApplicationContextProvider.bean(PasswordEncoder.class);
         this.email = data.getEmail();
         this.password = passwordEncoder.encode(data.getPassword());
         this.firstName = data.getFirstName();
         this.lastName = data.getLastName();
         this.role = Role.USER;
+    }
+
+    public User (OAuth2User oAuth2User) {
+        this.email = oAuth2User.getAttribute("email");
+        String name = oAuth2User.getAttribute("name");
+        if (name != null) {
+            List<String> names = List.of(name.split(" "));
+            if (names.size() > 1) {
+                this.firstName = names.get(0);
+                this.lastName = names.get(1);
+            } else {
+                this.firstName = names.get(0);
+            }
+        }
+        this.verified = true;
+        this.role = Role.USER;
+    }
+
+    public void addConnectedAccount(UserConnectedAccount connectedAccount) {
+        connectedAccounts.add(connectedAccount);
     }
 
     public void update(UpdateUserRequest request) {
@@ -82,10 +108,10 @@ public class User extends AbstractEntity implements UserDetails {
         return true;
     }
 
-    // if you want to not allow user to login before verifying their email,
-    // => you can change to return verified
+    // If you want to not allow the user to login before verifying their email, you can change this to
+    // return verified;
     @Override
     public boolean isEnabled() {
-        return true;
+        return verified;
     }
 }

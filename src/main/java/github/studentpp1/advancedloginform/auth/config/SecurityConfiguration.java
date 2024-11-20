@@ -1,5 +1,6 @@
 package github.studentpp1.advancedloginform.auth.config;
 
+import github.studentpp1.advancedloginform.auth.oauth2.OAuth2LoginSuccessHandler;
 import github.studentpp1.advancedloginform.auth.service.UserDetailsServiceImpl;
 import github.studentpp1.advancedloginform.config.ApplicationProperties;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +22,6 @@ import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-
 import java.util.List;
 
 @Configuration
@@ -30,17 +30,21 @@ import java.util.List;
 public class SecurityConfiguration {
     private final ApplicationProperties applicationProperties;
     private final UserDetailsServiceImpl userDetailsService;
+    private final OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(
+            HttpSecurity http
+    ) throws Exception {
         return http
-                .csrf(AbstractHttpConfigurer::disable) // TODO later
+                .csrf(AbstractHttpConfigurer::disable)
                 .cors(config -> config.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(request -> request
                         .requestMatchers(HttpMethod.POST, "/api/users").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/auth/csrf").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/users/verify-email").permitAll()
-                        .requestMatchers(HttpMethod.PATCH, "/api/users/reset-password").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/users/reset-password").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/users/forgot-password").permitAll()
                         .anyRequest().authenticated()
                 )
@@ -62,6 +66,14 @@ public class SecurityConfiguration {
                                 }
                         )
                 )
+                .oauth2Login(auth -> {
+                    auth.loginPage(applicationProperties.getLoginPageUrl());
+                    auth.successHandler(oAuth2LoginSuccessHandler);
+                    auth.redirectionEndpoint(redirectionEndpointConfig ->
+                            redirectionEndpointConfig.baseUri("/oauth2/callback/*"));
+                    auth.authorizationEndpoint(authorizationEndpointConfig ->
+                            authorizationEndpointConfig.baseUri("/oauth2/authorize"));
+                })
                 .build();
     }
 
@@ -75,14 +87,13 @@ public class SecurityConfiguration {
         UrlBasedCorsConfigurationSource configurationSource = new UrlBasedCorsConfigurationSource();
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(applicationProperties.getAllowedOrigins());
-        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedMethods(List.of("*"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
         configurationSource.registerCorsConfiguration("/**", configuration);
         return configurationSource;
     }
 
-    // we
     @Bean
     public AuthenticationManager authenticationManager() {
         DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
