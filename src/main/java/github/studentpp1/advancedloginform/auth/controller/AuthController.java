@@ -8,16 +8,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
-import org.springframework.security.web.csrf.CsrfToken;
-import org.springframework.security.web.csrf.CsrfTokenRepository;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.HashMap;
-import java.util.Map;
 
 @RestController
 @Slf4j
@@ -25,8 +17,6 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class AuthController {
     private final AuthService authService;
-    Logger logger = LoggerFactory.getLogger(AuthService.class);
-//    private CsrfTokenRepository csrfTokenRepository = CookieCsrfTokenRepository.withHttpOnlyFalse();
 
     @PostMapping("/login")
     public ResponseEntity<?> login(
@@ -49,14 +39,5 @@ public class AuthController {
             HttpServletRequest request, HttpServletResponse response) {
         authService.logout(request, response);
         return ResponseEntity.ok().build();
-    }
-
-    /**
-     * We don't have to do anything in this endpoint, the CsrfFilter will handle it.
-     * This endpoint should be invoked by the frontend to get the CSRF token.
-     */
-    @GetMapping("/csrf")
-    public CsrfToken csrf(CsrfToken token) {
-        return token;
     }
 }

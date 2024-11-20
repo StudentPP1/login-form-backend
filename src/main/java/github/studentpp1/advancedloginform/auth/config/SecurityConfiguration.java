@@ -37,11 +37,10 @@ public class SecurityConfiguration {
             HttpSecurity http
     ) throws Exception {
         return http
-                .csrf(AbstractHttpConfigurer::disable)
+                .csrf(AbstractHttpConfigurer::disable) // because we have 'same-site': strict
                 .cors(config -> config.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(request -> request
                         .requestMatchers(HttpMethod.POST, "/api/users").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/auth/csrf").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/users/verify-email").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/users/reset-password").permitAll()
