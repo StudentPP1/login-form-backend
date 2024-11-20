@@ -16,6 +16,7 @@ import github.studentpp1.advancedloginform.users.repository.VerificationCodeRepo
 import github.studentpp1.advancedloginform.utils.exception.ApiException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,14 +36,21 @@ public class UserService {
 
     @Transactional
     public UserResponse create(@Valid CreateUserRequest request) throws Exception {
-        User user = new User(request);
-        user = userRepository.save(user);
-        sendVerificationEmail(user);
-        return new UserResponse(user);
+        if (userRepository.findByEmail(request.getEmail()).isEmpty()) {
+            System.out.println("creating user");
+            User user = new User(request);
+            user = userRepository.save(user);
+            sendVerificationEmail(user);
+            return new UserResponse(user);
+        }
+        else {
+            System.out.println("error");
+            throw new BadCredentialsException("email is already using");
+        }
     }
 
     // create a new thread to send email and wait result of it
-    private void sendVerificationEmail(User user) throws Exception {
+    private void sendVerificationEmail(User user) {
         VerificationCode verificationCode = new VerificationCode(user);
         user.setVerificationCode(verificationCode); // set relation
         verificationCodeRepository.save(verificationCode);

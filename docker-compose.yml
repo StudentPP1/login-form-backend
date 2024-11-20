@@ -11,17 +11,15 @@ services:
       - db
     environment:
       - app.application-name=login-app
-      - app.base-url=http://app:8080
-      - app.allowed-origins=http://localhost
-      - app.login-page-url=http://app:8080/auth/login
-      - app.login-success-url=http://app:8080/auth/login-success
-      - spring.jpa.hibernate.ddl-auto=create-drop
+      - app.base-url=${BASE_URL}
+      - app.front-url=${FRONT_URL}
+      - app.allowed-origins=${FRONT_URL}
+      - app.login-page-url=${FRONT_URL}/auth/login
+      - app.login-success-url=${FRONT_URL}/auth/login-success
       - spring.mail.host=smtp.gmail.com
       - spring.mail.port=587
       - spring.mail.username=mishamakytonin@gmail.com
       - spring.mail.password=${MAIL_PASSWORD}
-      - spring.mail.properties.mail.smtp.auth=true
-      - spring.mail.properties.mail.smtp.starttls.enable=true
       - spring.datasource.url=jdbc:postgresql://db:5432/postgres
       - spring.datasource.driver-class-name=org.postgresql.Driver
       - spring.jpa.show-sql=true
@@ -30,7 +28,12 @@ services:
       - spring.datasource.password=${DATABASE_PASSWORD}
       - spring.security.oauth2.client.registration.google.client-id=${GOOGLE_CLIENT_ID}
       - spring.security.oauth2.client.registration.google.client-secret=${GOOGLE_CLIENT_SECRET}
-      - spring.security.oauth2.client.registration.google.redirect-uri=http://app:8080/oauth2/callback/google
+      - spring.security.oauth2.client.registration.google.redirect-uri=http:app/oauth2/callback/google
+      - spring.security.oauth2.client.registration.github.client-id=${GITHUB_CLIENT_ID}
+      - spring.security.oauth2.client.registration.github.client-secret=${GITHUB_CLIENT_SECRET}
+      - spring.security.oauth2.client.registration.github.redirect-uri=http:app/oauth2/callback/github
+      - logging.level.org.springframework.security=trace
+      - server.servlet.session.cookie.same-site=lax
   db:
     image: postgres
     restart: always

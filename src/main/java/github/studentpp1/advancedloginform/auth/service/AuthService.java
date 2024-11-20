@@ -26,7 +26,6 @@ import java.util.Collection;
 @Service
 @RequiredArgsConstructor
 public class AuthService {
-    private final UserRepository userRepository;
     private final AuthenticationManager authenticationManager;
     private final SecurityContextRepository contextRepository = new HttpSessionSecurityContextRepository();
     SecurityContextLogoutHandler logoutHandler = new SecurityContextLogoutHandler();
@@ -48,7 +47,7 @@ public class AuthService {
     }
 
     @Transactional
-    public UserResponse getSession(HttpServletRequest request) {
+    public UserResponse getSession() {
         User user = SecurityUtils.getAuthenticatedUser();
         Collection<? extends GrantedAuthority> authorities = SecurityContextHolder.getContext().getAuthentication().getAuthorities();
         return new UserResponse(user, authorities);

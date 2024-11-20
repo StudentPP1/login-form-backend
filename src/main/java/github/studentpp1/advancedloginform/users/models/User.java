@@ -15,10 +15,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 @Entity(name="users")
 @Getter
@@ -40,6 +37,7 @@ public class User extends AbstractEntity implements UserDetails {
     @OneToOne(mappedBy = "user")
     private VerificationCode verificationCode;
 
+    // automatically pull back child entities -> FetchType.EAGER
     @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
     private List<UserConnectedAccount> connectedAccounts = new ArrayList<>();
 

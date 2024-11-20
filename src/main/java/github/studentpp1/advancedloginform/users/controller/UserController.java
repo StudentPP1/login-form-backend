@@ -11,7 +11,6 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.view.RedirectView;
 
 import java.io.IOException;
-import java.util.HashMap;
 
 @RestController
 @RequestMapping("/api/users")
@@ -23,6 +22,7 @@ public class UserController {
     // register a new user, then verification email will be sent to the user
     @PostMapping
     public ResponseEntity<UserResponse> create(@Valid @RequestBody CreateUserRequest request) throws Exception {
+        System.out.println(request);
         UserResponse user = userService.create(request);
         return ResponseEntity.ok(user);
     }

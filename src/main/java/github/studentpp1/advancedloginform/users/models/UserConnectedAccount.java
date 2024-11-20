@@ -1,9 +1,7 @@
 package github.studentpp1.advancedloginform.users.models;
 
 import github.studentpp1.advancedloginform.users.entity.AbstractEntity;
-import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 

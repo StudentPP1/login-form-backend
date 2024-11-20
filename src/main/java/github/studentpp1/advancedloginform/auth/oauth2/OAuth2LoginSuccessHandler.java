@@ -48,8 +48,6 @@ public class OAuth2LoginSuccessHandler extends SavedRequestAwareAuthenticationSu
         String providerId = authentication.getName(); // username on provider
         String email = auth2AuthenticationToken.getPrincipal().getAttribute("email");
 
-        System.out.println(provider);
-        System.out.println(providerId);
         // check if you have user based on this account
         Optional<UserConnectedAccount> connectedAccount = userConnectedAccountRepository.findByProviderAndProviderId(
                 provider, providerId
@@ -65,11 +63,10 @@ public class OAuth2LoginSuccessHandler extends SavedRequestAwareAuthenticationSu
         if (existingUser != null) {
             UserConnectedAccount newConnectedAccount = new UserConnectedAccount(provider, providerId, existingUser);
             existingUser.addConnectedAccount(newConnectedAccount);
-            System.out.println(newConnectedAccount);
             existingUser = userRepository.save(existingUser);
+            userConnectedAccountRepository.save(newConnectedAccount);
             authenticateUser(existingUser, response);
-        }
-        else {
+        } else {
             User newUser = createUserFromOauth2User(auth2AuthenticationToken);
             authenticateUser(newUser, response);
         }
@@ -83,6 +80,7 @@ public class OAuth2LoginSuccessHandler extends SavedRequestAwareAuthenticationSu
         SecurityContextHolder.getContext().setAuthentication(authenticationToken);
         response.sendRedirect(applicationProperties.getLoginSuccessUrl());
     }
+
     private User createUserFromOauth2User(OAuth2AuthenticationToken token) {
         User user = new User(token.getPrincipal());
         String provider = token.getAuthorizedClientRegistrationId();

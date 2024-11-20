@@ -37,7 +37,7 @@ public class SecurityConfiguration {
             HttpSecurity http
     ) throws Exception {
         return http
-                .csrf(AbstractHttpConfigurer::disable) // because we have 'same-site': strict
+                .csrf(AbstractHttpConfigurer::disable) // because we have 'same-site': lax
                 .cors(config -> config.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(request -> request
                         .requestMatchers(HttpMethod.POST, "/api/users").permitAll()
