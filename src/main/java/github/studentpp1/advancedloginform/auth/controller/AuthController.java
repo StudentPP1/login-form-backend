@@ -30,8 +30,8 @@ public class AuthController {
 
     // get info about current authenticated user
     @GetMapping("/me")
-    public ResponseEntity<UserResponse> getSession(HttpServletRequest request) {
-        return ResponseEntity.ok(authService.getSession(request));
+    public ResponseEntity<UserResponse> getSession() {
+        return ResponseEntity.ok(authService.getSession());
     }
 
     @PostMapping("/logout")
